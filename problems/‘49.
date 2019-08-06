@@ -1,0 +1,77 @@
+## Description
+
+Given an array of strings, group anagrams together.
+
+Example:
+```
+Input: ["eat", "tea", "tan", "ate", "nat", "bat"],
+Output:
+[
+  ["ate","eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+```
+Note:
+
+- All inputs will be in lowercase.
+- The order of your output does not matter.
+
+## Solution
+
+所含字母相同，关键就是找到相同的签名
+
+1. 字母重新排序，anagram 都相同
+```java
+// TC：O(NKlgK) k 为字符串长度
+// SC： O(N)
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> maps = new HashMap<>();
+        for (String s : strs) {
+            String sign = genSign(s);
+            if (maps.containsKey(sign)) {
+                maps.get(sign).add(s);
+            } else {
+                List<String> list = new LinkedList<>();
+                list.add(s);
+                maps.put(sign, list);
+            }
+        }
+
+        List<List<String>> result = new LinkedList<>();
+        for (String key : maps.keySet()) {
+            result.add(maps.get(key));
+        }
+        
+        return result;
+    }
+
+
+    private String genSign(String s) {
+        char[] chars = s.toCharArray();
+        Arrays.sort(chars);
+        return new String(chars);
+    }
+}
+```
+
+2. `genSign` 方法直接数每个小写字母出现的次数，拼凑出一个唯一签名
+
+```java
+private String genSign(String s) {
+        int[] frequency = new int[27];
+        for (int i = 0; i < s.length(); i++) {
+            frequency[s.charAt(i) - 'a']++;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < frequency.length; i++) {
+            stringBuilder.append(frequency[i]);
+            // delimiter
+            stringBuilder.append("-");
+        }
+        
+        return stringBuilder.toString();
+    }
+```
